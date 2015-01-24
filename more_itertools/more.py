@@ -1,9 +1,12 @@
+from __future__ import print_function
+
 from functools import partial, wraps
 from itertools import izip_longest
 from recipes import *
 
 __all__ = ['chunked', 'first', 'peekable', 'collate', 'consumer', 'ilen',
-           'iterate', 'with_iter']
+           'iterate', 'with_iter', 'one', 'distinct_permutations',
+           'intersperse']
 
 
 _marker = object()
@@ -47,8 +50,7 @@ def first(iterable, default=_marker):
 
     ``first()`` is useful when you have a generator of expensive-to-retrieve
     values and want any arbitrary one. It is marginally shorter than
-    ``next(iter(...))`` but saves you an entire ``try``/``except`` when you
-    want to provide a fallback value.
+    ``next(iter(...), default)``.
 
     """
     try:
@@ -159,7 +161,7 @@ def collate(*iterables, **kwargs):
     key = kwargs.pop('key', lambda a: a)
     reverse = kwargs.pop('reverse', False)
 
-    min_or_max = partial(max if reverse else min, key=lambda (a, b): a)
+    min_or_max = partial(max if reverse else min, key=lambda a_b: a_b[0])
     peekables = [peekable(it) for it in iterables]
     peekables = [p for p in peekables if p]  # Kill empties.
     while peekables:
@@ -177,7 +179,7 @@ def consumer(func):
     ... def tally():
     ...     i = 0
     ...     while True:
-    ...         print 'Thing number %s is %s.' % (i, (yield))
+    ...         print('Thing number %s is %s.' % (i, (yield)))
     ...         i += 1
     ...
     >>> t = tally()
@@ -227,11 +229,107 @@ def iterate(func, start):
 def with_iter(context_manager):
     """Wrap an iterable in a ``with`` statement, so it closes once exhausted.
 
-    Example::
+    For example, this will close the file when the iterator is exhausted::
 
         upper_lines = (line.upper() for line in with_iter(open('foo')))
+
+    Any context manager which returns an iterable is a candidate for
+    ``with_iter``.
 
     """
     with context_manager as iterable:
         for item in iterable:
             yield item
+
+def one(iterable):
+    """Return the only element from the iterable.
+
+    Raise ValueError if the iterable is empty or longer than 1 element. For
+    example, assert that a DB query returns a single, unique result.
+
+    >>> one(['val'])
+    'val'
+
+    >>> one(['val', 'other'])  # doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+    ...
+    ValueError: too many values to unpack (expected 1)
+
+    >>> one([])
+    Traceback (most recent call last):
+    ...
+    ValueError: need more than 0 values to unpack
+
+    ``one()`` attempts to advance the iterable twice in order to ensure there
+    aren't further items. Because this discards any second item, ``one()`` is
+    not suitable in situations where you want to catch its exception and then
+    try an alternative treatment of the iterable. It should be used only when a
+    iterable longer than 1 item is, in fact, an error.
+
+    """
+    result, = iterable
+    return result
+
+
+def distinct_permutations(iterable):
+    """Yield successive distinct permutations of the elements in the iterable.
+
+    Equivalent to ``set(permutations(iterable))``, except duplicates are not
+    generated. For large input sequences, this is much more efficient.
+
+    """
+    def perm_unique_helper(item_counts, perm, i):
+        """Internal helper function
+
+        :arg item_counts: Stores the unique items in ``iterable`` and how many
+            times they are repeated
+        :arg perm: The permutation that is being built for output
+        :arg i: The index of the permutation being modified
+
+        The output permutations are built up recursively; the distinct items
+        are placed until their repetitions are exhausted.
+        """
+        if i < 0:
+            yield tuple(perm)
+        else:
+            for item in item_counts:
+                if item_counts[item] <= 0:
+                    continue
+                perm[i] = item
+                item_counts[item] -= 1
+                for x in perm_unique_helper(item_counts, perm, i - 1):
+                    yield x
+                item_counts[item] += 1
+
+    item_counts = {}
+    for item in iterable:
+        item_counts[item] = item_counts.get(item, 0) + 1
+
+    return perm_unique_helper(item_counts, [None] * len(iterable),
+                              len(iterable) - 1)
+
+
+def intersperse(e, iterable):
+    """
+    The intersperse generator takes an element and an iterable and
+    `intersperses' that element between the elements of the iterable.
+
+    >>> from more_itertools import intersperse
+    >>> list(intersperse('x', [1, 'o', 5, 'k']))
+    [1, 'x', 'o', 'x', 5, 'x', 'k']
+    >>> list(intersperse(None, [1, 2, 3]))
+    [1, None, 2, None, 3]
+    >>> list(intersperse('x', 1))
+    Traceback (most recent call last):
+    ...
+    TypeError: 'int' object is not iterable
+    >>> list(intersperse('x', []))
+    []
+    """
+    iterable = iter(iterable)
+    if iterable:
+        yield next(iterable)
+        for item in iterable:
+            yield e
+            yield item
+    raise StopIteration
