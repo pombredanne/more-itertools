@@ -8,12 +8,19 @@ python:
     - "3.4"
     - "3.5"
     - "3.6"
+    - "pypy-5.4.1"
+    - "pypy3"
 
 install:
-    - "pip install -U nose tox tox-travis"
+    - "pip install ."
+    - "pip install -U coveralls flake8"
 
 script:
-    - "tox"
+    - "coverage run --include='more_itertools/*.py' --omit='more_itertools/tests/*' setup.py test"
+    - "flake8 ."
 
 notifications:
   email: false
+
+after_success:
+    - "coveralls"

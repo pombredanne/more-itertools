@@ -4,64 +4,228 @@ API Reference
 
 .. automodule:: more_itertools
 
+Grouping
+========
 
-New Routines
-============
+These tools yield groups of items from a source iterable.
 
-.. autofunction:: bucket
+----
+
+**New itertools**
+
 .. autofunction:: chunked
-.. autofunction:: collapse
-.. autofunction:: collate(*iterables, key=lambda a: a, reverse=False)
-.. autofunction:: consumer
-.. autofunction:: distinct_permutations
-.. autofunction:: distribute
-.. autofunction:: first(iterable[, default])
-.. autofunction:: ilen
-.. autofunction:: interleave
-.. autofunction:: interleave_longest
-.. autofunction:: intersperse
-.. autofunction:: iterate
-.. autofunction:: one
-.. autofunction:: padded
-.. autoclass:: peekable
-.. autofunction:: side_effect
 .. autofunction:: sliced
-.. autofunction:: split_after
+.. autofunction:: distribute
+.. autofunction:: divide
+.. autofunction:: split_at
 .. autofunction:: split_before
+.. autofunction:: split_after
+.. autofunction:: bucket
+
+----
+
+**Itertools recipes**
+
+.. autofunction:: grouper
+.. autofunction:: partition
+
+
+Lookahead and lookback
+======================
+
+These tools peek at an iterable's values without advancing it.
+
+----
+
+**New itertools**
+
+
 .. autofunction:: spy
-.. autofunction:: stagger
-.. autofunction:: unique_to_each
+.. autoclass:: peekable
+.. autoclass:: seekable
+
+
+Windowing
+=========
+
+These tools yield windows of items from an iterable.
+
+----
+
+**New itertools**
+
 .. autofunction:: windowed
-.. autofunction:: with_iter
-.. autofunction:: zip_offset(*iterables, offsets, longest=False, fillvalue=None)
+.. autofunction:: stagger
+
+----
+
+**Itertools recipes**
+
+.. autofunction:: pairwise
 
 
-Itertools Recipes
-=================
+Augmenting
+==========
 
-.. autofunction:: accumulate
-.. autofunction:: take
-.. autofunction:: tabulate
-.. autofunction:: tail
-.. autofunction:: consume
-.. autofunction:: nth
-.. autofunction:: all_equal
-.. autofunction:: quantify
+These tools yield items from an iterable, plus additional data.
+
+----
+
+**New itertools**
+
+.. autofunction:: count_cycle
+.. autofunction:: intersperse
+.. autofunction:: padded
+.. autofunction:: adjacent
+.. autofunction:: groupby_transform
+
+----
+
+**Itertools recipes**
+
 .. autofunction:: padnone
 .. autofunction:: ncycles
+
+
+Combining
+=========
+
+These tools combine multiple iterables.
+
+----
+
+**New itertools**
+
+.. autofunction:: collapse
+.. autofunction:: sort_together
+.. autofunction:: interleave
+.. autofunction:: interleave_longest
+.. autofunction:: collate(*iterables, key=lambda a: a, reverse=False)
+.. autofunction:: zip_offset(*iterables, offsets, longest=False, fillvalue=None)
+
+----
+
+**Itertools recipes**
+
 .. autofunction:: dotproduct
 .. autofunction:: flatten
-.. autofunction:: repeatfunc
-.. autofunction:: pairwise
-.. autofunction:: grouper
 .. autofunction:: roundrobin
-.. autofunction:: partition
-.. autofunction:: powerset
+
+
+Summarizing
+===========
+
+These tools return summarized or aggregated data from an iterable.
+
+----
+
+**New itertools**
+
+.. autofunction:: ilen
+.. autofunction:: first(iterable[, default])
+.. autofunction:: one
+.. autofunction:: unique_to_each
+.. autofunction:: locate(iterable, pred=bool)
+.. autofunction:: consecutive_groups(iterable, ordering=lambda x: x)
+.. autofunction:: exactly_n(iterable, n, predicate=bool)
+.. autoclass:: run_length
+
+----
+
+**Itertools recipes**
+
+.. autofunction:: all_equal
+.. autofunction:: first_true
+.. autofunction:: nth
+.. autofunction:: quantify(iterable, pred=bool)
+
+
+Selecting
+=========
+
+These yools yield certain items from an iterable.
+
+----
+
+**New itertools**
+
+.. autofunction:: islice_extended(start, stop, step)
+.. autofunction:: strip
+.. autofunction:: lstrip
+.. autofunction:: rstrip
+
+----
+
+**Itertools recipes**
+
+.. autofunction:: take
+.. autofunction:: tail
 .. autofunction:: unique_everseen
 .. autofunction:: unique_justseen
-.. autofunction:: iter_except
-.. autofunction:: first_true
+
+
+Combinatorics
+=============
+
+These tools yield combinatorial arrangements of items from iterables.
+
+----
+
+**New itertools**
+
+.. autofunction:: distinct_permutations
+.. autofunction:: cyclic_permutations
+
+----
+
+**Itertools recipes**
+
+.. autofunction:: powerset
 .. autofunction:: random_product
 .. autofunction:: random_permutation
 .. autofunction:: random_combination
 .. autofunction:: random_combination_with_replacement
+
+
+Wrapping
+========
+
+These tools provide wrappers to smooth working with objects that produce or
+consume iterables.
+
+----
+
+**New itertools**
+
+.. autofunction:: always_iterable
+.. autofunction:: consumer
+.. autofunction:: with_iter
+
+----
+
+**Itertools recipes**
+
+.. autofunction:: iter_except
+
+
+Others
+======
+
+**New itertools**
+
+.. autofunction:: numeric_range(start, stop, step)
+.. autofunction:: always_reversible
+.. autofunction:: side_effect
+.. autofunction:: iterate
+.. autofunction:: difference(iterable, func=operator.sub)
+.. autofunction:: make_decorator
+.. autoclass:: SequenceView
+
+----
+
+**Itertools recipes**
+
+.. autofunction:: consume
+.. autofunction:: accumulate(iterable, func=operator.add)
+.. autofunction:: tabulate
+.. autofunction:: repeatfunc

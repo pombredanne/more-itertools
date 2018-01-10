@@ -26,3 +26,8 @@ _build
 
 # Environment
 .env
+
+# IDE files
+.idea
+.vscode
+.DS_Store
